@@ -13,7 +13,8 @@ import java.util.ResourceBundle;
 
 import static de.thro.inf.prg3.a10.KitchenHatchConstants.*;
 
-public class MainController implements Initializable {
+public class MainController implements Initializable
+{
 
 	private final ProgressReporter progressReporter;
 	private final KitchenHatch kitchenHatch;
@@ -31,7 +32,8 @@ public class MainController implements Initializable {
 	@FXML
 	private ProgressBar orderQueueProgress;
 
-	public MainController() {
+	public MainController()
+	{
 		nameGenerator = new NameGenerator();
 
 		//TODO assign an instance of your implementation of the KitchenHatch interface
@@ -41,7 +43,8 @@ public class MainController implements Initializable {
 	}
 
 	@Override
-	public void initialize(URL location, ResourceBundle resources) {
+	public void initialize(URL location, ResourceBundle resources)
+	{
 		orderQueueProgress.progressProperty().bindBidirectional(this.progressReporter.orderQueueProgressProperty());
 		kitchenHatchProgress.progressProperty().bindBidirectional(this.progressReporter.kitchenHatchProgressProperty());
 		waitersBusyIndicator.progressProperty().bindBidirectional(this.progressReporter.waitersBusyProperty());

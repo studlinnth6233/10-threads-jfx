@@ -12,7 +12,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author Peter Kurfer
  */
-public final class ProgressReporter {
+public final class ProgressReporter
+{
 
 	private final DoubleProperty orderQueueProgress;
 	private final DoubleProperty kitchenHatchProgress;
@@ -25,7 +26,8 @@ public final class ProgressReporter {
 	private final int totalOrderCount;
 	private final int kitchenHatchCapacity;
 
-	public ProgressReporter(KitchenHatch kitchenHatch, int cookCount, int waiterCount, int totalOrderCount, int kitchenHatchCapacity) {
+	public ProgressReporter(KitchenHatch kitchenHatch, int cookCount, int waiterCount, int totalOrderCount, int kitchenHatchCapacity)
+	{
 		this.orderQueueProgress = new SimpleDoubleProperty(1.0);
 		this.kitchenHatchProgress = new SimpleDoubleProperty(0.0d);
 		this.waitersBusy = new SimpleDoubleProperty(-1.0d);
@@ -38,43 +40,53 @@ public final class ProgressReporter {
 		this.kitchenHatchCapacity = kitchenHatchCapacity;
 	}
 
-	public double getOrderQueueProgress() {
+	public double getOrderQueueProgress()
+	{
 		return orderQueueProgress.get();
 	}
 
-	public DoubleProperty orderQueueProgressProperty() {
+	public DoubleProperty orderQueueProgressProperty()
+	{
 		return orderQueueProgress;
 	}
 
-	public synchronized void setOrderQueueProgress(double orderQueueProgress) {
+	public synchronized void setOrderQueueProgress(double orderQueueProgress)
+	{
 		this.orderQueueProgress.set(orderQueueProgress);
 	}
 
-	public double getKitchenHatchProgress() {
+	public double getKitchenHatchProgress()
+	{
 		return kitchenHatchProgress.get();
 	}
 
-	public DoubleProperty kitchenHatchProgressProperty() {
+	public DoubleProperty kitchenHatchProgressProperty()
+	{
 		return kitchenHatchProgress;
 	}
 
-	private synchronized void setKitchenHatchProgress(double kitchenHatchProgress) {
+	private synchronized void setKitchenHatchProgress(double kitchenHatchProgress)
+	{
 		this.kitchenHatchProgress.set(kitchenHatchProgress);
 	}
 
-	public double getWaitersBusy() {
+	public double getWaitersBusy()
+	{
 		return waitersBusy.get();
 	}
 
-	public DoubleProperty waitersBusyProperty() {
+	public DoubleProperty waitersBusyProperty()
+	{
 		return waitersBusy;
 	}
 
-	public double getCooksBusy() {
+	public double getCooksBusy()
+	{
 		return cooksBusy.get();
 	}
 
-	public DoubleProperty cooksBusyProperty() {
+	public DoubleProperty cooksBusyProperty()
+	{
 		return cooksBusy;
 	}
 
@@ -82,7 +94,8 @@ public final class ProgressReporter {
 	 * Notifies the reporter that a waiter left
 	 * if no waiters are working anymore the busy indicator is removed from the view
 	 */
-	public void notifyWaiterLeaving() {
+	public void notifyWaiterLeaving()
+	{
 		waiterCount.getAndDecrement();
 		updateProgress();
 	}
@@ -91,7 +104,8 @@ public final class ProgressReporter {
 	 * Notifies the reporter that a cook left
 	 * if no cooks are working anymore the busy indicator is removed from the view
 	 */
-	public void notifyCookLeaving() {
+	public void notifyCookLeaving()
+	{
 		cookCount.getAndDecrement();
 		updateProgress();
 	}
@@ -99,15 +113,18 @@ public final class ProgressReporter {
 	/**
 	 * Updates the queue depth visualizations of the order queue and kitchen hatch queue
 	 */
-	public void updateProgress() {
+	public void updateProgress()
+	{
 		setKitchenHatchProgress(((double) this.kitchenHatch.getDishesCount()) / this.kitchenHatchCapacity);
 		setOrderQueueProgress(((double) this.kitchenHatch.getOrderCount()) / this.totalOrderCount);
 
-		if (waiterCount.get() == 0) {
+		if (waiterCount.get() == 0)
+		{
 			Platform.runLater(() -> waitersBusy.set(1.0));
 		}
 
-		if (cookCount.get() == 0) {
+		if (cookCount.get() == 0)
+		{
 			Platform.runLater(() -> cooksBusy.set(1.0));
 		}
 	}

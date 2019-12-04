@@ -1,8 +1,10 @@
 package de.thro.inf.prg3.a10;
 
-public abstract class KitchenHatchConstants {
+public abstract class KitchenHatchConstants
+{
 
-	private KitchenHatchConstants() {
+	private KitchenHatchConstants()
+	{
 	}
 
 	public static final int ORDER_COUNT = 150;
