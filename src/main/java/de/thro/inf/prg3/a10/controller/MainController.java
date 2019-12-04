@@ -2,13 +2,19 @@ package de.thro.inf.prg3.a10.controller;
 
 import de.thro.inf.prg3.a10.internals.displaying.ProgressReporter;
 import de.thro.inf.prg3.a10.kitchen.KitchenHatch;
+import de.thro.inf.prg3.a10.kitchen.KitchenHatchImpl;
+import de.thro.inf.prg3.a10.model.Order;
 import de.thro.inf.prg3.a10.util.NameGenerator;
+import de.thro.inf.prg3.a10.workers.Cook;
+import de.thro.inf.prg3.a10.workers.Waiter;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 
 import java.net.URL;
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.ResourceBundle;
 
 import static de.thro.inf.prg3.a10.KitchenHatchConstants.*;
@@ -34,12 +40,15 @@ public class MainController implements Initializable
 
 	public MainController()
 	{
-		nameGenerator = new NameGenerator();
+		this.nameGenerator = new NameGenerator();
 
-		//TODO assign an instance of your implementation of the KitchenHatch interface
-		this.kitchenHatch = null;
+		Deque<Order> orders = new LinkedList<>();
+
+		for (int orderIndex = 0; orderIndex < ORDER_COUNT; orderIndex ++)
+			orders.addLast(new Order(this.nameGenerator.getRandomDish()));
+
+		this.kitchenHatch = new KitchenHatchImpl(KITCHEN_HATCH_SIZE, orders);
 		this.progressReporter = new ProgressReporter(kitchenHatch, COOKS_COUNT, WAITERS_COUNT, ORDER_COUNT, KITCHEN_HATCH_SIZE);
-
 	}
 
 	@Override
@@ -50,6 +59,10 @@ public class MainController implements Initializable
 		waitersBusyIndicator.progressProperty().bindBidirectional(this.progressReporter.waitersBusyProperty());
 		cooksBusyIndicator.progressProperty().bind(this.progressReporter.cooksBusyProperty());
 
-		/* TODO create the cooks and waiters, pass the kitchen hatch and the reporter instance and start them */
+		for (int cookIndex = 0; cookIndex < COOKS_COUNT; cookIndex ++)
+			new Thread(new Cook(this.nameGenerator.generateName(), this.progressReporter, this.kitchenHatch)).start();
+
+		for (int waiterIndex = 0; waiterIndex < WAITERS_COUNT; waiterIndex ++)
+			new Thread(new Waiter(this.nameGenerator.generateName(), this.progressReporter, this.kitchenHatch)).start();
 	}
 }
