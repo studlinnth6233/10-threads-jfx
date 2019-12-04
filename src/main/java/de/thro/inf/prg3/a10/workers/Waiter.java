@@ -23,22 +23,28 @@ public class Waiter implements Runnable
 	@Override
 	public void run()
 	{
-		while (this.kitchenHatch.getDishesCount() > 0)
+		Dish dish;
+
+		do
 		{
-			Dish dish = this.kitchenHatch.dequeueDish();
+			dish = this.kitchenHatch.dequeueDish(5000);
 
-			try
+			if (dish != null)
 			{
-				Thread.sleep(new Random().nextInt(10000));
-			}
+				try
+				{
+					Thread.sleep(new Random().nextInt(10000));
+				}
 
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
 
-			this.progressReporter.updateProgress();
+				this.progressReporter.updateProgress();
+			}
 		}
+		while (this.kitchenHatch.getDishesCount() > 0 || dish == null);
 
 		this.progressReporter.notifyWaiterLeaving();
 	}

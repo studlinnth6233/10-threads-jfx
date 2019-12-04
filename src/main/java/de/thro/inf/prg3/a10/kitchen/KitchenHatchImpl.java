@@ -30,24 +30,24 @@ public class KitchenHatchImpl implements KitchenHatch
 	@Override
 	public Order dequeueOrder(long timeout)
 	{
-		if (this.getOrderCount() == 0)
-		{
-			try
-			{
-				wait(timeout);
-			}
-
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
-
 		synchronized (this.orders)
 		{
+			while (this.getOrderCount() == 0)
+			{
+				try
+				{
+					this.orders.wait(timeout);
+				}
+
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+			}
+
 			Order order = this.orders.removeFirst();
 
-			notify();
+			this.orders.notifyAll();
 
 			return order;
 		}
@@ -62,24 +62,34 @@ public class KitchenHatchImpl implements KitchenHatch
 	@Override
 	public Dish dequeueDish(long timeout)
 	{
-		if (this.getDishesCount() == 0)
-		{
-			try
-			{
-				wait(timeout);
-			}
-
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
+		long timeStamp = System.nanoTime();
 
 		synchronized (this.dishes)
 		{
-			Dish dish = this.dishes.removeFirst();
+			while (this.getDishesCount() == 0)
+			{
+				try
+				{
+					this.dishes.wait(timeout);
+				}
 
-			notify();
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+
+				if (timeout > 0 && dishes.size() == 0 && System.nanoTime() - timeStamp > timeout * 1000)
+				{
+					this.dishes.notifyAll();
+
+					return null;
+				}
+			}
+
+			Dish dish = this.dishes.removeFirst();
+			System.out.println(dish.getMealName());
+
+			this.dishes.notifyAll();
 
 			return dish;
 		}
@@ -88,24 +98,24 @@ public class KitchenHatchImpl implements KitchenHatch
 	@Override
 	public void enqueueDish(Dish m)
 	{
-		if (this.getDishesCount() == this.MAX_MEALS)
-		{
-			try
-			{
-				wait();
-			}
-
-			catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-		}
-
 		synchronized (this.dishes)
 		{
+			while (this.getDishesCount() == this.MAX_MEALS)
+			{
+				try
+				{
+					this.dishes.wait();
+				}
+
+				catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
+			}
+
 			this.dishes.addLast(m);
 
-			notify();
+			this.dishes.notifyAll();
 		}
 	}
 
